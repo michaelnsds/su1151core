@@ -29,10 +29,10 @@ import java.util.Calendar;
 import java.util.logging.LogManager;
 
 import l2r.Config;
+import l2r.ConfigSunrise;
 import l2r.FloodProtectorsConfig;
 import l2r.L2DatabaseFactory;
 import l2r.Server;
-import l2r.ConfigSunrise;
 import l2r.UPnPService;
 import l2r.gameserver.cache.HtmCache;
 import l2r.gameserver.dao.factory.impl.DAOFactory;
@@ -159,6 +159,8 @@ import com.l2jserver.mmocore.SelectorThread;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import itopz.com.VDSystemManager;
 
 public class GameServer
 {
@@ -298,6 +300,8 @@ public class GameServer
 		
 		printSection("Auction Manager");
 		ItemAuctionManager.getInstance();
+		
+		VDSystemManager.getInstance();
 		
 		printSection("Olympiad");
 		if (Config.ENABLE_OLYMPIAD)

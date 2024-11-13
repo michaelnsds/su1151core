@@ -14,5 +14,6 @@
 	<classpathentry kind="lib" path="dist/libs/sutil.jar"/>
 	<classpathentry kind="lib" path="dist/libs/autofarm.jar"/>
 	<classpathentry kind="lib" path="dist/libs/javabuffer.jar"/>
+	<classpathentry kind="lib" path="D:/Lineage II/Add Ons Sunrise/Vote System/VDSystem.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
