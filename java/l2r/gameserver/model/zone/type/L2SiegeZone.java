@@ -43,6 +43,8 @@ import l2r.gameserver.model.zone.L2ZoneType;
 import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.OnEventTrigger;
 
+import gr.sr.utils.Tools;
+
 /**
  * A siege zone
  * @author durgus
@@ -190,6 +192,25 @@ public class L2SiegeZone extends L2ZoneType
 				// vGodFather effect zones
 				Collection<L2SwampZone> zones = ZoneManager.getInstance().getAllZones(L2SwampZone.class);
 				zones.stream().filter(zone -> zone.isEnabled()).forEach(zone -> character.sendPacket(new OnEventTrigger(zone._eventId, true)));
+				/* Auto-kick dualbox */
+				TeleportWhereType type = TeleportWhereType.TOWN;
+				int inSiegeClient = 0;
+				for (L2PcInstance playersEnSiege : getPlayersInside())
+				{
+					if (Tools.isDualBox(plyer, playersEnSiege))
+					{
+						inSiegeClient++;
+					}
+					if (inSiegeClient > 1)
+					{
+						plyer.teleToLocation(type);
+						plyer.stopFameTask();
+						plyer.setIsInSiege(false);
+						plyer.sendMessage("Only one character per PC is allowed.");
+						break;
+					}
+				}
+				/**/
 			}
 		}
 	}
