@@ -415,6 +415,11 @@ public class ItemData
 		return _allTemplates.length;
 	}
 	
+	public L2Item[] getAllTemItems()
+	{
+		return _allTemplates;
+	}
+	
 	private static class SingletonHolder
 	{
 		protected static final ItemData _instance = new ItemData();

@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import l2r.Config;
 import l2r.gameserver.communitybbs.Managers.ClanBBSManager;
 import l2r.gameserver.communitybbs.Managers.DonateBBSManager;
+import l2r.gameserver.communitybbs.Managers.DropInfoBBSManager;
 import l2r.gameserver.communitybbs.Managers.FavoriteBBSManager;
 import l2r.gameserver.communitybbs.Managers.MailBBSManager;
 import l2r.gameserver.communitybbs.Managers.PostBBSManager;
@@ -113,13 +114,14 @@ public class BoardsManager
 		{
 			TopBBSManager.getInstance().cbByPass(command, activeChar);
 		}
-		else if (command.startsWith("_maillist"))
+		else if (command.startsWith("_maillist") || command.startsWith("_bbssearch"))
 		{
-			MailBBSManager.getInstance().cbByPass(command, activeChar);
+			// MailBBSManager.getInstance().cbByPass(command, activeChar);
+			DropInfoBBSManager.getInstance().cbByPass(command, activeChar);
 		}
 		else if (command.startsWith("_friendlist_0_") || command.startsWith("_bbs_friends") || command.startsWith("_bbsfriends"))
 		{
-		
+			
 		}
 		else if (command.startsWith("_bbsloc"))
 		{

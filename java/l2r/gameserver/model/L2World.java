@@ -31,6 +31,7 @@ import java.util.function.Consumer;
 import l2r.Config;
 import l2r.gameserver.data.sql.CharNameTable;
 import l2r.gameserver.data.xml.impl.AdminData;
+import l2r.gameserver.model.actor.L2Npc;
 import l2r.gameserver.model.actor.L2Playable;
 import l2r.gameserver.model.actor.instance.L2PcInstance;
 import l2r.gameserver.model.actor.instance.L2PetInstance;
@@ -671,6 +672,19 @@ public final class L2World
 			}
 		}
 		_log.info("All visible NPC's deleted.");
+	}
+	
+	public List<L2Npc> getAllByNpcId(int npcId)
+	{
+		List<L2Npc> npcs = new LinkedList<>();
+		for (L2Object npc : L2World.getInstance().getVisibleObjects())
+		{
+			if (npc.getId() == npcId)
+			{
+				npcs.add((L2Npc) npc);
+			}
+		}
+		return npcs;
 	}
 	
 	private static class SingletonHolder
