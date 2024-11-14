@@ -734,6 +734,16 @@ public final class Config extends AbstractConfigs
 	public static boolean L2JMOD_ALLOW_CHANGE_PASSWORD;
 	
 	// --------------------------------------------------
+	// Fortress Reward
+	// --------------------------------------------------
+	public static int REWARD_ID_FORTRESS;
+	public static int REWARD_CHANCE;
+	public static int MIN_DROP_NORMAL;
+	public static int MAX_DROP_NORMAL;
+	public static int MIN_DROP_CAP;
+	public static int MAX_DROP_CAP;
+	
+	// --------------------------------------------------
 	// NPC Settings
 	// --------------------------------------------------
 	public static boolean ANNOUNCE_MAMMON_SPAWN;
@@ -2332,6 +2342,14 @@ public final class Config extends AbstractConfigs
 			L2JMOD_DEBUG_VOICE_COMMAND = L2JModSettings.getBoolean("DebugVoiceCommand", false);
 			
 			L2JMOD_ALLOW_CHANGE_PASSWORD = L2JModSettings.getBoolean("AllowChangePassword", false);
+			
+			// Fortress Reward Manager
+			REWARD_ID_FORTRESS = L2JModSettings.getInt("RewardId", 9912);
+			REWARD_CHANCE = L2JModSettings.getInt("RewardChance", 100);
+			MIN_DROP_NORMAL = L2JModSettings.getInt("MinDropGuard", 4);
+			MAX_DROP_NORMAL = L2JModSettings.getInt("MaxDropGuard", 16);
+			MIN_DROP_CAP = L2JModSettings.getInt("MinDropCaptain", 140);
+			MAX_DROP_CAP = L2JModSettings.getInt("MinDropCaptain", 300);
 			
 			// Load PvP L2Properties file (if exists)
 			final PropertiesParser PVPSettings = new PropertiesParser(PVP_CONFIG_FILE);
