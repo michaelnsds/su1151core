@@ -46,10 +46,13 @@ import l2r.gameserver.model.items.PcItemTemplate;
 import l2r.gameserver.model.items.instance.L2ItemInstance;
 import l2r.gameserver.model.quest.Quest;
 import l2r.gameserver.model.quest.State;
+import l2r.gameserver.model.skills.L2Skill;
 import l2r.gameserver.network.L2GameClient;
+import l2r.gameserver.network.SystemMessageId;
 import l2r.gameserver.network.serverpackets.CharCreateFail;
 import l2r.gameserver.network.serverpackets.CharCreateOk;
 import l2r.gameserver.network.serverpackets.CharSelectionInfo;
+import l2r.gameserver.network.serverpackets.SystemMessage;
 
 import gr.sr.configsEngine.configs.impl.CustomServerConfigs;
 
@@ -236,6 +239,34 @@ public final class CharacterCreate extends L2GameClientPacket
 		if (Config.STARTING_ADENA > 0)
 		{
 			newChar.addAdena("Init", Config.STARTING_ADENA, null, false);
+		}
+		
+		if (Config.STARTING_BUFFS)
+		{
+			if (!newChar.isMageClass())
+			{
+				for (int[] buff : Config.STARTING_BUFFS_F) // Custom buffs for fighters
+				{
+					L2Skill skill = SkillData.getInstance().getInfo(buff[0], buff[1]);
+					if (skill != null)
+					{
+						skill.getEffects(newChar, newChar);
+						newChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.YOU_FEEL_S1_EFFECT).addSkillName(buff[0]));
+					}
+				}
+			}
+			else
+			{
+				for (int[] buff : Config.STARTING_BUFFS_M) // Custom buffs for mystics
+				{
+					L2Skill skill = SkillData.getInstance().getInfo(buff[0], buff[1]);
+					if (skill != null)
+					{
+						skill.getEffects(newChar, newChar);
+						newChar.sendPacket(SystemMessage.getSystemMessage(SystemMessageId.YOU_FEEL_S1_EFFECT).addSkillName(buff[0]));
+					}
+				}
+			}
 		}
 		
 		final L2PcTemplate template = newChar.getTemplate();

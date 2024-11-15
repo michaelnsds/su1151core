@@ -871,6 +871,18 @@ public final class L2PcInstance extends L2Playable
 		return player.createDb() ? player : null;
 	}
 	
+	private boolean _isDummy;
+	
+	public boolean isDummy()
+	{
+		return _isDummy;
+	}
+	
+	public void setDummy(final boolean isDummy)
+	{
+		_isDummy = isDummy;
+	}
+	
 	public static L2PcInstance createDummyPlayer(int objectId, String name)
 	{
 		// Create a new L2PcInstance with an account name
@@ -1051,7 +1063,7 @@ public final class L2PcInstance extends L2Playable
 	 * @param accountName The name of the account including this L2PcInstance
 	 * @param app
 	 */
-	private L2PcInstance(int objectId, L2PcTemplate template, String accountName, PcAppearance app)
+	public L2PcInstance(int objectId, L2PcTemplate template, String accountName, PcAppearance app)
 	{
 		super(objectId, template);
 		setInstanceType(InstanceType.L2PcInstance);
@@ -5528,13 +5540,13 @@ public final class L2PcInstance extends L2Playable
 				{
 					// Don't drop
 					if (itemDrop.isShadowItem() || // Dont drop Shadow Items
-					itemDrop.isTimeLimitedItem() || // Dont drop Time Limited Items
-					!itemDrop.isDropable() || (itemDrop.getId() == Inventory.ADENA_ID) || // Adena
-					(itemDrop.getItem().getType2() == L2Item.TYPE2_QUEST) || // Quest Items
-					(hasSummon() && (getSummon().getControlObjectId() == itemDrop.getObjectId())) || // Control Item of active pet
-					(Arrays.binarySearch(Config.KARMA_LIST_NONDROPPABLE_ITEMS, itemDrop.getId()) >= 0) || // Item listed in the non droppable item list
-					(Arrays.binarySearch(Config.KARMA_LIST_NONDROPPABLE_PET_ITEMS, itemDrop.getId()) >= 0 // Item listed in the non droppable pet item list
-					))
+						itemDrop.isTimeLimitedItem() || // Dont drop Time Limited Items
+						!itemDrop.isDropable() || (itemDrop.getId() == Inventory.ADENA_ID) || // Adena
+						(itemDrop.getItem().getType2() == L2Item.TYPE2_QUEST) || // Quest Items
+						(hasSummon() && (getSummon().getControlObjectId() == itemDrop.getObjectId())) || // Control Item of active pet
+						(Arrays.binarySearch(Config.KARMA_LIST_NONDROPPABLE_ITEMS, itemDrop.getId()) >= 0) || // Item listed in the non droppable item list
+						(Arrays.binarySearch(Config.KARMA_LIST_NONDROPPABLE_PET_ITEMS, itemDrop.getId()) >= 0 // Item listed in the non droppable pet item list
+						))
 					{
 						continue;
 					}
@@ -5643,13 +5655,13 @@ public final class L2PcInstance extends L2Playable
 		
 		// Check if it's pvp
 		if (((checkIfPvP(target) && // Can pvp and
-		(targetPlayer.getPvpFlag() != 0 // Target player has pvp flag set
-		)) || // or
-		(isInsideZone(ZoneIdType.PVP) && // Player is inside pvp zone and
-		targetPlayer.isInsideZone(ZoneIdType.PVP) // Target player is inside pvp zone
-		)) || // or
-		(isInsideZone(ZoneIdType.ZONE_CHAOTIC) && // Player is inside chaotic zone and
-		targetPlayer.isInsideZone(ZoneIdType.ZONE_CHAOTIC))) // Target player is inside chaotic zone
+			(targetPlayer.getPvpFlag() != 0 // Target player has pvp flag set
+			)) || // or
+			(isInsideZone(ZoneIdType.PVP) && // Player is inside pvp zone and
+				targetPlayer.isInsideZone(ZoneIdType.PVP) // Target player is inside pvp zone
+			)) || // or
+			(isInsideZone(ZoneIdType.ZONE_CHAOTIC) && // Player is inside chaotic zone and
+				targetPlayer.isInsideZone(ZoneIdType.ZONE_CHAOTIC))) // Target player is inside chaotic zone
 		{
 			increasePvpKills(target);
 		}
@@ -10754,8 +10766,11 @@ public final class L2PcInstance extends L2Playable
 	@Override
 	public void deleteMe()
 	{
-		cleanup();
-		store();
+		if (!isDummy())
+		{
+			cleanup();
+			store();
+		}
 		super.deleteMe();
 	}
 	

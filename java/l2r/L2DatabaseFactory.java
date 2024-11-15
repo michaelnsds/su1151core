@@ -19,6 +19,7 @@
 package l2r;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import l2r.util.dbutils.BasicDataSource;
@@ -57,5 +58,27 @@ public class L2DatabaseFactory extends BasicDataSource
 	public Connection getConnection() throws SQLException
 	{
 		return getConnection(null);
+	}
+	
+	public static int simpleExcuter(final String sqlCmd, final Object... prarms)
+	{
+		int update = 0;
+		try (final Connection con = getInstance().getConnection();
+			final PreparedStatement stmt = con.prepareStatement(sqlCmd))
+		{
+			if (prarms != null)
+			{
+				for (int i = 0; i < prarms.length; ++i)
+				{
+					stmt.setObject(i + 1, prarms[i]);
+				}
+			}
+			update = stmt.executeUpdate();
+		}
+		catch (SQLException se)
+		{
+			se.printStackTrace();
+		}
+		return update;
 	}
 }

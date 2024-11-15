@@ -162,7 +162,9 @@ public class RequestExEnchantItemAttribute extends L2GameClientPacket
 			return;
 		}
 		
-		if (!player.destroyItem("AttrEnchant", stone, 1, player, true))
+		final boolean mustUseAllStones = player.getQuickVarB("All_ATTRIBUTES", false);
+		
+		if (!player.destroyItem("AttrEnchant", stone, 1, player, !mustUseAllStones))
 		{
 			player.sendPacket(SystemMessageId.NOT_ENOUGH_ITEMS);
 			Util.handleIllegalPlayerAction(player, "Player " + player.getName() + " tried to attribute enchant with a stone he doesn't have", Config.DEFAULT_PUNISH);
@@ -170,70 +172,101 @@ public class RequestExEnchantItemAttribute extends L2GameClientPacket
 			return;
 		}
 		
-		boolean success = false;
-		int chance = Rnd.get(1000);
-		switch (Elementals.getItemElemental(stoneId)._type)
+		newPower -= powerToAdd;
+		int usedStones = 0;
+		
+		// Go through all the stones available to make a massive attribute enchanting. Only if that was intented, otherwise it will be done 1 time
+		while (true)
 		{
-			case Stone:
-			case Roughore:
-				switch (item.getItem().getItemGrade())
+			usedStones++;
+			
+			boolean success = false;
+			int chance = Rnd.get(1000);
+			switch (Elementals.getItemElemental(stoneId)._type)
+			{
+				case Stone:
+				case Roughore:
+					switch (item.getItem().getItemGrade())
+					{
+						case S:
+							success = chance < (Config.ENCHANT_CHANCE_ELEMENT_STONE_S * 10);
+							break;
+						case S80:
+							success = chance < (Config.ENCHANT_CHANCE_ELEMENT_STONE_S80 * 10);
+							break;
+						case S84:
+							success = chance < (Config.ENCHANT_CHANCE_ELEMENT_STONE_S84 * 10);
+							break;
+					}
+					break;
+				case Crystal:
+					switch (item.getItem().getItemGrade())
+					{
+						case S:
+							success = chance < (Config.ENCHANT_CHANCE_ELEMENT_CRYSTAL_S * 10);
+							break;
+						case S80:
+							success = chance < (Config.ENCHANT_CHANCE_ELEMENT_CRYSTAL_S80 * 10);
+							break;
+						case S84:
+							success = chance < (Config.ENCHANT_CHANCE_ELEMENT_CRYSTAL_S84 * 10);
+							break;
+					}
+					break;
+				case Jewel:
+					switch (item.getItem().getItemGrade())
+					{
+						case S:
+							success = chance < (Config.ENCHANT_CHANCE_ELEMENT_JEWEL_S * 10);
+							break;
+						case S80:
+							success = chance < (Config.ENCHANT_CHANCE_ELEMENT_JEWEL_S80 * 10);
+							break;
+						case S84:
+							success = chance < (Config.ENCHANT_CHANCE_ELEMENT_JEWEL_S84 * 10);
+							break;
+					}
+					break;
+				case Energy:
+					switch (item.getItem().getItemGrade())
+					{
+						case S:
+							success = chance < (Config.ENCHANT_CHANCE_ELEMENT_ENERGY_S * 10);
+							break;
+						case S80:
+							success = chance < (Config.ENCHANT_CHANCE_ELEMENT_ENERGY_S80 * 10);
+							break;
+						case S84:
+							success = chance < (Config.ENCHANT_CHANCE_ELEMENT_ENERGY_S84 * 10);
+							break;
+					}
+					break;
+			}
+			
+			if (success)
+			{
+				newPower += getPowerToAdd(stoneId, newPower, item);
+				if (newPower > limit)
 				{
-					case S:
-						success = chance < (Config.ENCHANT_CHANCE_ELEMENT_STONE_S * 10);
-						break;
-					case S80:
-						success = chance < (Config.ENCHANT_CHANCE_ELEMENT_STONE_S80 * 10);
-						break;
-					case S84:
-						success = chance < (Config.ENCHANT_CHANCE_ELEMENT_STONE_S84 * 10);
-						break;
+					newPower = limit;
+					break;
 				}
+			}
+			
+			// Only continue doing it if we must use all the stones
+			if (!mustUseAllStones)
+			{
 				break;
-			case Crystal:
-				switch (item.getItem().getItemGrade())
-				{
-					case S:
-						success = chance < (Config.ENCHANT_CHANCE_ELEMENT_CRYSTAL_S * 10);
-						break;
-					case S80:
-						success = chance < (Config.ENCHANT_CHANCE_ELEMENT_CRYSTAL_S80 * 10);
-						break;
-					case S84:
-						success = chance < (Config.ENCHANT_CHANCE_ELEMENT_CRYSTAL_S84 * 10);
-						break;
-				}
+			}
+			
+			if (!player.destroyItem("AttrEnchant", stone, 1, player, !mustUseAllStones))
+			{
 				break;
-			case Jewel:
-				switch (item.getItem().getItemGrade())
-				{
-					case S:
-						success = chance < (Config.ENCHANT_CHANCE_ELEMENT_JEWEL_S * 10);
-						break;
-					case S80:
-						success = chance < (Config.ENCHANT_CHANCE_ELEMENT_JEWEL_S80 * 10);
-						break;
-					case S84:
-						success = chance < (Config.ENCHANT_CHANCE_ELEMENT_JEWEL_S84 * 10);
-						break;
-				}
-				break;
-			case Energy:
-				switch (item.getItem().getItemGrade())
-				{
-					case S:
-						success = chance < (Config.ENCHANT_CHANCE_ELEMENT_ENERGY_S * 10);
-						break;
-					case S80:
-						success = chance < (Config.ENCHANT_CHANCE_ELEMENT_ENERGY_S80 * 10);
-						break;
-					case S84:
-						success = chance < (Config.ENCHANT_CHANCE_ELEMENT_ENERGY_S84 * 10);
-						break;
-				}
-				break;
+			}
 		}
 		
-		if (success)
+		// Send messages, update status and equip item again
+		if ((newPower - elementValue) > 0)
 		{
 			byte realElement = item.isArmor() ? opositeElement : elementToAdd;
 			
@@ -270,10 +303,24 @@ public class RequestExEnchantItemAttribute extends L2GameClientPacket
 			InventoryUpdate iu = new InventoryUpdate();
 			iu.addModifiedItem(item);
 			player.sendInventoryUpdate(iu);
+			
+			// Special message if all stones were used
+			if (mustUseAllStones)
+			{
+				player.sendMessage("Result of enchanting process: " + usedStones + " Attribute Items used. +" + (newPower - elementValue) + " Elemental Value");
+			}
 		}
 		else
 		{
-			player.sendPacket(SystemMessageId.FAILED_ADDING_ELEMENTAL_POWER);
+			// Special message if all stones were used
+			if (mustUseAllStones)
+			{
+				player.sendMessage("Result of enchanting process: " + usedStones + " Attribute Items used. +" + (newPower - elementValue) + " Elemental Value");
+			}
+			else
+			{
+				player.sendPacket(SystemMessageId.FAILED_ADDING_ELEMENTAL_POWER);
+			}
 		}
 		
 		player.sendPacket(new ExAttributeEnchantResult(powerToAdd));

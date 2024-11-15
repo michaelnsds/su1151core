@@ -21,6 +21,8 @@ package l2r.gameserver.handler;
 import java.util.HashMap;
 import java.util.Map;
 
+import l2r.features.sellBuffEngine.handler.BuffShopByPass;
+
 /**
  * @author nBd, UnAfraid
  */
@@ -31,6 +33,8 @@ public class BypassHandler implements IHandler<IBypassHandler, String>
 	protected BypassHandler()
 	{
 		_datatable = new HashMap<>();
+		
+		registerHandler(new BuffShopByPass());
 	}
 	
 	@Override

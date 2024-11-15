@@ -250,6 +250,9 @@ public final class Config extends AbstractConfigs
 	public static boolean ALT_LEAVE_PARTY_LEADER;
 	public static boolean INITIAL_EQUIPMENT_EVENT;
 	public static long STARTING_ADENA;
+	public static boolean STARTING_BUFFS;
+	public static List<int[]> STARTING_BUFFS_M = new ArrayList<>();
+	public static List<int[]> STARTING_BUFFS_F = new ArrayList<>();
 	public static byte STARTING_LEVEL;
 	public static int STARTING_SP;
 	public static long MAX_ADENA;
@@ -1825,6 +1828,64 @@ public final class Config extends AbstractConfigs
 			ALT_VALIDATE_TRIGGER_SKILLS = Character.getBoolean("AltValidateTriggerSkills", false);
 			PLAYER_MOVEMENT_BLOCK_TIME = Character.getInt("NpcTalkBlockingTime", 0) * 1000;
 			
+			STARTING_BUFFS = Character.getBoolean("StartingBuffs", true);
+			String[] propertySplit = Character.getString("StartingBuffsMage", "1204,2").split(";");
+			STARTING_BUFFS_M.clear();
+			for (String buff : propertySplit)
+			{
+				String[] buffSplit = buff.split(",");
+				if (buffSplit.length != 2)
+				{
+					_log.warn("StartingBuffsMage[Config.load()]: invalid config property -> StartingBuffsMage \"" + buff + "\"");
+				}
+				else
+				{
+					try
+					{
+						STARTING_BUFFS_M.add(new int[]
+						{
+							Integer.parseInt(buffSplit[0]),
+							Integer.parseInt(buffSplit[1])
+						});
+					}
+					catch (NumberFormatException nfe)
+					{
+						if (STARTING_BUFFS_M.equals(""))
+						{
+							System.out.println("EROOOOOOOOOOOR WITH STARTING BUFS");
+						}
+					}
+				}
+			}
+			propertySplit = Character.getString("StartingBuffsFighter", "1204,2").split(";");
+			STARTING_BUFFS_F.clear();
+			for (String buff : propertySplit)
+			{
+				String[] buffSplit = buff.split(",");
+				if (buffSplit.length != 2)
+				{
+					_log.warn("StartingBuffsFighter[Config.load()]: invalid config property -> StartingBuffsFighter \"" + buff + "\"");
+				}
+				else
+				{
+					try
+					{
+						STARTING_BUFFS_F.add(new int[]
+						{
+							Integer.parseInt(buffSplit[0]),
+							Integer.parseInt(buffSplit[1])
+						});
+					}
+					catch (NumberFormatException nfe)
+					{
+						if (STARTING_BUFFS_F.equals(""))
+						{
+							System.out.println("EROOOOOOOOOOOR WITH STARTING BUFS");
+						}
+					}
+				}
+			}
+			
 			// Load Instances L2Properties file (if exists)
 			final PropertiesParser instancesSettings = new PropertiesParser(INSTANCES_CONFIG_FILE);
 			
@@ -2128,7 +2189,7 @@ public final class Config extends AbstractConfigs
 			RAID_MIN_RESPAWN_MULTIPLIER = NPC.getFloat("RaidMinRespawnMultiplier", 1.0f);
 			RAID_MAX_RESPAWN_MULTIPLIER = NPC.getFloat("RaidMaxRespawnMultiplier", 1.0f);
 			RAID_MINION_RESPAWN_TIMER = NPC.getInt("RaidMinionRespawnTime", 300000);
-			String[] propertySplit = NPC.getString("CustomMinionsRespawnTime", "").split(";");
+			propertySplit = NPC.getString("CustomMinionsRespawnTime", "").split(";");
 			MINIONS_RESPAWN_TIME = new HashMap<>(propertySplit.length);
 			for (String prop : propertySplit)
 			{

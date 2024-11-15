@@ -21,6 +21,8 @@ package l2r.gameserver.handler;
 import java.util.HashMap;
 import java.util.Map;
 
+import l2r.features.sellBuffEngine.handler.BuffShopVCmd;
+
 import gr.sr.raidEngine.handler.voice.RaidVCmd;
 
 /**
@@ -35,6 +37,7 @@ public class VoicedCommandHandler implements IHandler<IVoicedCommandHandler, Str
 		_datatable = new HashMap<>();
 		
 		registerHandler(new RaidVCmd());
+		registerHandler(new BuffShopVCmd());
 	}
 	
 	@Override
